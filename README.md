@@ -32,3 +32,52 @@ The data for this project is sourced from the Kaggle dataset:
 	description VARCHAR(250)
 );
 ```
+## Business Problems and Solutions
+1. Count the Number of Movies vs TV Shows
+   - Objective: To determine the distribution of content types on Netflix.
+   ```sql
+	SELECT 
+	    type,
+	    COUNT(*)
+	FROM netflix
+	GROUP BY 1;
+   ```
+2. Find the Most Common Rating for Movies and TV Shows
+   - Objective: To identify the most frequently occurring rating for each type of content
+```sql
+  SELECT
+		type,
+		rating
+	FROM
+	(
+	SELECT
+		type,
+		rating,
+		COUNT(*),
+		RANK() OVER(PARTITION BY type ORDER BY COUNT(*) DESC) as ranking
+	FROM netflix
+	GROUP BY 1,2
+	)
+	WHERE ranking = 1;
+```
+3. List All Movies Released in a Specific Year (e.g., 2020)
+   - Objective: To retrieve all movies released in a specific year.
+```sql
+	SELECT * 
+	FROM netflix
+	WHERE release_year = 2020;
+
+```
+4. Find the Top 5 Countries with the Most Content on Netflix
+   -  To identify the top 5 countries with the highest number of content items.
+```sql
+SELECT 
+	UNNEST(STRING_TO_ARRAY(country, ',')) as new_country,
+	COUNT(*) as total_content
+FROM netflix
+GROUP BY 1
+ORDER BY 2 DESC
+LIMIT 5;
+
+```
+
